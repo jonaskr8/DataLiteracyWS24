@@ -29,6 +29,8 @@ data
 
 
 # Model fitting 
+  
+  #polr()
 
 
 
