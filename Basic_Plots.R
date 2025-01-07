@@ -4,6 +4,8 @@
 data <- read.csv("student_lifestyle_dataset.csv")
 library(dplyr)
 library(ggplot2)
+# For the ordinal logistic regression
+library(MASS)
 
 # Data exploration
 View(data)
@@ -16,12 +18,15 @@ data
 # %>% 
 
 data$high_preformer <- ifelse(data$GPA >= 3.5, 1, 0)
-high_p <- data[data$high_preformer == 1,]
 mean(high_p$Study_Hours_Per_Day)
 
 data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0, 
                                              ifelse(data$Stress_Level == "Moderate", 1, 
                                                     ifelse(data$Stress_Level == "High", 2, 7)))
+
+high_p <- data[data$high_preformer == 1,]
+high_p <- mutate(high_p, social_and_extrac = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day)
+
 
 average_stress_per_social_hours_low_performing <- data %>% 
   filter(GPA >= 0 & GPA <= 3.2) %>%
@@ -67,4 +72,26 @@ plot(x, y_high, type = "b", col = "blue", pch = 19, lty = 1,
      xlab = "Social Hours per Day", ylab = "Average Stress Level",
      main = "Average Stress Level by Social Hours (High Performing)")
 
+
+# Model fitting
+
+model <- polr(factor(Stress_Level) ~ social_and_extrac, high_p, Hess = TRUE)
+
+summary(model)
+
+# t-value from the output
+t_value <- -1.171
+
+# Standard normal cumulative distribution function (CDF)
+p_value <- 2 * (1 - pnorm(abs(t_value)))
+
+p_value
+
+(ctable <- coef(summary(model)))
+
+## calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+(ctable <- cbind(ctable, "p value" = p))
 
