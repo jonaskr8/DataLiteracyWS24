@@ -6,6 +6,7 @@ library(dplyr)
 library(ggplot2)
 # For the Bayesian ordinal logistic regression
 library(brms)
+library(brant)
 
 # Data exploration
 View(data)
@@ -75,13 +76,38 @@ plot(x, y_high, type = "b", col = "blue", pch = 19, lty = 1,
 
 # Model fitting
 
+# Model 1: Predictors: Social Hours 
+# -> Not a good fit, diverges
 model1 <- brm(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data = high_p, family = cumulative())
 summary(model1)
 
-model2 <- brm(Stress_Level ~ Study_Hours_Per_Day, data = high_p)
+# Model 2: Predictors: Study Hours 
+# -> More study, more stress
+model2 <- brm(factor(Stress_Level, ordered = TRUE) ~ Study_Hours_Per_Day, data = high_p, family = cumulative(link = "logit"))
 summary(model2)
 plot(model2)
 pp_check(model2)
+
+# Model 3: Predictors: Physical Activity 
+# -> More phys-ac, less stress (-95% interval is veeery close to zero though)
+model3 <- brm(factor(Stress_Level, ordered = TRUE) ~ Physical_Activity_Hours_Per_Day, data = high_p, family = cumulative(link = "logit"))
+summary(model3)
+plot(model3)
+pp_check(model3)
+
+# Model 4: Predictors: Study Hours and Physical Activity 
+# -> Physical Activity seems to be not significant
+model4 <- brm(factor(Stress_Level, ordered = TRUE) ~ Study_Hours_Per_Day + Physical_Activity_Hours_Per_Day, data = high_p, family = cumulative(link = "logit"))
+summary(model4)
+plot(model4)
+pp_check(model4)
+
+# Model 5: Predictors: Study Hours and Physical Activity and Social Hours 
+# -> both Physical Activity and Social Hours are not good predictors (95% interval includes zero for both of them)
+model5 <- brm(factor(Stress_Level, ordered = TRUE) ~ Study_Hours_Per_Day + Physical_Activity_Hours_Per_Day + Social_Hours_Per_Day, data = high_p, family = cumulative(link = "logit"))
+summary(model5)
+plot(model5)
+pp_check(model5)
 # 
 # # t-value from the output
 # t_value <- -1.171
