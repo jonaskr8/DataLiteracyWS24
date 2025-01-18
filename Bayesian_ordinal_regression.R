@@ -75,8 +75,13 @@ plot(x, y_high, type = "b", col = "blue", pch = 19, lty = 1,
 
 # Model fitting
 
-model <- brm(factor(Stress_Level) ~ Social_Hours_Per_Day, data = high_p, family = cumulative())
-summary(model)
+model1 <- brm(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data = high_p, family = cumulative())
+summary(model1)
+
+model2 <- brm(Stress_Level ~ Study_Hours_Per_Day, data = high_p)
+summary(model2)
+plot(model2)
+pp_check(model2)
 # 
 # # t-value from the output
 # t_value <- -1.171
