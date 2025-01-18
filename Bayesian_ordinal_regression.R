@@ -7,6 +7,8 @@ library(ggplot2)
 # For the Bayesian ordinal logistic regression
 library(brms)
 library(brant)
+library(rstan)
+#install.packages("rtools")
 
 # Data exploration
 View(data)
@@ -17,6 +19,12 @@ head(data)
 # Data pre-processing
 data 
 # %>% 
+
+# Select the upper 25% of the students as high performers
+hist(data$GPA)
+quantile(data$GPA, 0.75)
+# -> delivers 3.33 as the 75th percentile
+
 
 data$high_preformer <- ifelse(data$GPA >= 3.5, 1, 0)
 mean(high_p$Study_Hours_Per_Day)
@@ -108,7 +116,25 @@ model5 <- brm(factor(Stress_Level, ordered = TRUE) ~ Study_Hours_Per_Day + Physi
 summary(model5)
 plot(model5)
 pp_check(model5)
-# 
+
+# Model 6: Predictors: Sleep Hours
+# -> The effect of sleep seems not to be significant (95% interval includes zero)
+model6 <- brm(factor(Stress_Level, ordered = TRUE) ~ Sleep_Hours_Per_Day, 
+                     data = high_p, family = cumulative(link = "logit"))
+summary(model6)
+plot(model6)
+pp_check(model6)
+
+# Model 7: Predictors: Sleep Hours and Study Hours
+
+model7 <- brm(factor(Stress_Level, 
+                     ordered = TRUE) ~ Sleep_Hours_Per_Day + Study_Hours_Per_Day, 
+                     data = high_p, family = cumulative(link = "logit"))
+summary(model7)
+plot(model7)
+pp_check(model7)
+
+
 # # t-value from the output
 # t_value <- -1.171
 # 
@@ -124,4 +150,14 @@ pp_check(model5)
 # 
 # ## combined table
 # (ctable <- cbind(ctable, "p value" = p))
+
+
+# For some reason I have to run this lines in my console so that the models compile, please ignore
+
+# Sys.setenv(CC = "clang")
+# Sys.setenv(CXX = "clang++")
+# Sys.setenv(CFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
+# Sys.setenv(CXXFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
+# Sys.setenv(LDFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
+
 
