@@ -1,4 +1,4 @@
-# setwd("C:\\Studium\\Master\\Semester2\\DataLiteracy\\project\\DataLiteracyWS24")
+setwd("C:/Users/schae/OneDrive/Documents/Uni/WiSe24_25/DataLiteracy/DataLiteracyWS24")
 # getwd()
 
 data <- read.csv("student_lifestyle_dataset.csv")
@@ -26,7 +26,7 @@ data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0,
 
 high_p <- data[data$high_preformer == 1,]
 high_p <- mutate(high_p, social_and_extrac = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day)
-
+social <- mutate(data, social_and_extr = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day + Physical_Activity_Hours_Per_Day)
 
 average_stress_per_social_hours_low_performing <- data %>% 
   filter(GPA >= 0 & GPA <= 3.2) %>%
@@ -76,8 +76,20 @@ plot(x, y_high, type = "b", col = "blue", pch = 19, lty = 1,
 # Model fitting
 
 model <- polr(factor(Stress_Level) ~ social_and_extrac, high_p, Hess = TRUE)
-
 summary(model)
+
+model1 <- polr(factor(Stress_Level) ~ Sleep_Hours_Per_Day, high_p, Hess = TRUE)
+summary(model1)
+
+model2 <- polr(factor(Stress_Level) ~ social_and_extr, social, Hess = TRUE)
+summary(model2)
+
+model3 <- polr(factor(Stress_Level) ~ Study_Hours_Per_Day, social, Hess = TRUE)
+summary(model3)
+
+# comparison of stress levels - social+extrac+physical between high performers and all students
+plot(factor(high_p$Stress_Level), high_p$social_and_extr, xlab = "Stress Level", ylab = "social, extracur and physical hours/day", ylim = c(0,14))
+plot(factor(social$Stress_Level), social$social_and_extr, xlab = "Stress Level", ylab = "social, extracur and physical hours/day", ylim = c(0,14))
 
 # t-value from the output
 t_value <- -1.171
