@@ -46,11 +46,18 @@ average_stress_filtered <- data %>%
   group_by(Social_Hours_Per_Day) %>%
   summarise(average_stress = mean(data$Stress_Level, na.rm = TRUE))
 
+# I want to view all participant's stress level plotted (no average, x axis is simply participant no.)
+plot(data$Stress_Level, xlab = "Participant", ylab = "Stress Level",
+     main = "Stress Level of all participants", col = "blue")
+
 # Data visualization
 plot(data$Study_Hours_Per_Day, data$Sleep_Hours_Per_Day, xlab = "Study", ylab = "Sleep",
      main = "Study and sleep", col = "blue")
 
 plot(data$Study_Hours_Per_Day, data$GPA, xlab = "Study", ylab = "GPA",
+     main = "Study and GPA", col = "blue")
+
+plot(data$Sleep_Hours_Per_Day, data$GPA, xlab = "Sleep", ylab = "GPA",
      main = "Study and GPA", col = "blue")
 
 plot(data$Social_Hours_Per_Day, data$GPA, xlab = "Social", ylab = "GPA",

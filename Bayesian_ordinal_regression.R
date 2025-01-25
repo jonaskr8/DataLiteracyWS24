@@ -1,6 +1,7 @@
 # setwd("C:\\Studium\\Master\\Semester2\\DataLiteracy\\project\\DataLiteracyWS24")
 # getwd()
 
+setwd("/Desktop/Data Literacy/Project/DataLiteracyWS24/Bayesian_ordinal_regression.R")
 data <- read.csv("student_lifestyle_dataset.csv")
 library(dplyr)
 library(ggplot2)
@@ -22,21 +23,26 @@ data
 
 # Select the upper 25% of the students as high performers
 hist(data$GPA)
-quantile(data$GPA, 0.75)
+GPA_high_achiever <- quantile(data$GPA, 0.75)
 # -> delivers 3.33 as the 75th percentile
 
-
-data$high_preformer <- ifelse(data$GPA >= 3.5, 1, 0)
+# Create a new column for high performers
+data$high_preformer <- ifelse(data$GPA >= GPA_high_achiever, 1, 0)
 mean(high_p$Study_Hours_Per_Day)
 
+# Convert the stress level to a numeric variable
 data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0, 
                                              ifelse(data$Stress_Level == "Moderate", 1, 
                                                     ifelse(data$Stress_Level == "High", 2, 7)))
 
+
+# Filter the data for high performers
 high_p <- data[data$high_preformer == 1,]
+
+# Create a new column for the sum of social and extracurricular hours
 high_p <- mutate(high_p, social_and_extrac = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day)
 
-
+# Filter the data for low performers
 average_stress_per_social_hours_low_performing <- data %>% 
   filter(GPA >= 0 & GPA <= 3.2) %>%
   group_by(Social_Hours_Per_Day) %>%
