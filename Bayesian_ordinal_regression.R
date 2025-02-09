@@ -23,9 +23,6 @@ head(data)
 data 
 # %>% 
 
-data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0, 
-                            ifelse(data$Stress_Level == "Moderate", 1, 
-                                   ifelse(data$Stress_Level == "High", 2, 7)))
 cor_matrix <- cor(data[2:8])
 print(cor_matrix)
 
@@ -110,6 +107,7 @@ bprior <- c(prior(normal(-10,1), class = b, coef = Social_Hours_Per_Day))
 
 model1 <- brm(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data = high_p, family = cumulative())
 summary(model1)
+plot(model1)
 get_prior(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data = high_p, family = cumulative(), prior = bprior)
 # Model 2: Predictors: Study Hours 
 # -> More study, more stress
