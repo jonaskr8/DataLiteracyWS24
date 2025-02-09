@@ -78,7 +78,7 @@ y_high <- as.numeric(average_stress_per_social_hours_high_performing$average_str
 
 
 
-# Plot the data
+# Plot the social hours over average stress levels for low and high performers
 plot(x, y_low, type = "b", col = "blue", pch = 19, lty = 1,
      xlab = "Social Hours per Day", ylab = "Average Stress Level",
      main = "Average Stress Level by Social Hours (Low Performing)")
@@ -132,7 +132,7 @@ plot(model6)
 pp_check(model6)
 
 # Model 7: Predictors: Sleep Hours and Study Hours
-
+# -> more study more stress but more sleep less stress
 model7 <- brm(factor(Stress_Level, 
                      ordered = TRUE) ~ Sleep_Hours_Per_Day + Study_Hours_Per_Day, 
                      data = high_p, family = cumulative(link = "logit"))
