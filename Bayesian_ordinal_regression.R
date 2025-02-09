@@ -161,13 +161,12 @@ summary(model7)
 plot(model7)
 pp_check(model7)
 
+# inverse logit function
 invlogit <- function(x){
   exp(x) / (1 + exp(x))
 }
 
-
-
-
+# functions to compute probability of stress level given intercepts and variable(habit of student)
 P_Stress_0 <- function (intercept1, intercept2, W, X) {
   invlogit(intercept1 - W * X)
 }
@@ -190,11 +189,11 @@ P_Stress <- function(level, intercept1, intercept2, W, X) {
   }
 }
 
-
+# posterior samples
 post <- posterior_samples(model1)
-
 post2 <- posterior_samples(model2)
 
+# adding columns
 add_prob_columns <- function(post, predictor, hours) {
   # Create a helper function to generate the probability columns dynamically
   for (level in 0:2) {
@@ -234,6 +233,7 @@ probs2 <- add_prob_columns(post2, "b_Study_Hours_Per_Day", 6)
 #          P_2_8 = P_Stress_2(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 8)) ->
 #   post
 
+# getting posterior means
 mean_P_0_8 <- mean(post$P_0_8)
 print(mean_P_0_8)
 

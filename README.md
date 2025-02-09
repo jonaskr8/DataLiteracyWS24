@@ -14,6 +14,8 @@ library(ggplot2)
 library(brms)
 library(brant)
 library(rstan)
+library(reshape2)
+library(viridis)
 ```
 
 ## Data Pre-Processing
@@ -28,3 +30,19 @@ model <- brm(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data =
 pp_check(model)
 ```
 Performing `pp_check()` on the model to perform posterior predictive checks on the models to see if the model predicts the data accuratly.
+
+Computing the probability of being in a given stress level based on intercepts and student habits `W`
+```
+P_Stress <- function(level, intercept1, intercept2, W, X) {
+  if (level == 0) {
+    return(P_Stress_0(intercept1, intercept2, W, X))
+  } else if (level == 1) {
+    return(P_Stress_1(intercept1, intercept2, W, X))
+  } else if (level == 2) {
+    return(P_Stress_2(intercept1, intercept2, W, X))
+  } else {
+    stop("Invalid stress level. Please provide one of the levels 1, 2 or 3.")
+  }
+}
+```
+
