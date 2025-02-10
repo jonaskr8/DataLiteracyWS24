@@ -1,7 +1,6 @@
 # setwd("C:\\Studium\\Master\\Semester2\\DataLiteracy\\project\\DataLiteracyWS24")
 # getwd()
 
-setwd("/Desktop/Data Literacy/Project/DataLiteracyWS24/Bayesian_ordinal_regression.R")
 data <- read.csv("student_lifestyle_dataset.csv")
 library(dplyr)
 library(ggplot2)
@@ -106,7 +105,6 @@ plot(x, y_high, type = "b", col = "blue", pch = 19, lty = 1,
 
 # Model 1: Predictors: Social Hours 
 # -> Not a good fit, diverges
-bprior <- c(prior(normal(-10,1), class = b, coef = Social_Hours_Per_Day))
 
 model1 <- brm(factor(Stress_Level, ordered = TRUE) ~ Social_Hours_Per_Day, data = high_p, family = cumulative())
 summary(model1)
