@@ -23,6 +23,22 @@ head(data)
 data 
 # %>% 
 
+data$high_preformer <- ifelse(data$GPA >= 3.5, 1, 0)
+
+
+# Convert the stress level to a numeric variable
+data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0, 
+                            ifelse(data$Stress_Level == "Moderate", 1, 
+                                   ifelse(data$Stress_Level == "High", 2, 7)))
+
+
+# Filter the data for high performers
+high_p <- data[data$high_preformer == 1,]
+
+# Create a new column for the sum of social and extracurricular hours
+high_p <- mutate(high_p, social_and_extrac = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day)
+mean(high_p$Study_Hours_Per_Day)
+
 cor_matrix <- cor(data[2:8])
 print(cor_matrix)
 
@@ -30,13 +46,6 @@ print(cor_matrix)
 cor_melted <- melt(cor_matrix)
 
 # Create a new column for high performers
-data$high_preformer <- ifelse(data$GPA >= 3.5, 1, 0)
-mean(high_p$Study_Hours_Per_Day)
-
-# Convert the stress level to a numeric variable
-data$Stress_Level <- ifelse(data$Stress_Level == "Low", 0, 
-                                             ifelse(data$Stress_Level == "Moderate", 1, 
-                                                    ifelse(data$Stress_Level == "High", 2, 7)))
 
 # Plot the heatmap
 ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
@@ -46,12 +55,6 @@ ggplot(cor_melted, aes(Var1, Var2, fill = value)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Correlation Matrix Heatmap", x = "Feature", y = "Feature")
 
-
-# Filter the data for high performers
-high_p <- data[data$high_preformer == 1,]
-
-# Create a new column for the sum of social and extracurricular hours
-high_p <- mutate(high_p, social_and_extrac = Social_Hours_Per_Day + Extracurricular_Hours_Per_Day)
 
 # Filter the data for low performers
 average_stress_per_social_hours_low_performing <- data %>% 
@@ -186,7 +189,7 @@ P_Stress <- function(level, intercept1, intercept2, W, X) {
   } else if (level == 2) {
     return(P_Stress_2(intercept1, intercept2, W, X))
   } else {
-    stop("Invalid stress level. Please provide one of the levels 1, 2 or 3.")
+    stop("Invalid stress level. Please provide one of the levels 0, 1 or 2.")
   }
 }
 
@@ -216,63 +219,21 @@ probs_4 <- add_prob_columns(post, "b_Social_Hours_Per_Day", 6)
 probs <- add_prob_columns(post, "b_Social_Hours_Per_Day", 6)
 probs2 <- add_prob_columns(post2, "b_Study_Hours_Per_Day", 6)
 
-# post %>%
-#   mutate(P_0_4 = P_Stress_0(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 4),
-#          P_0_6 = P_Stress_0(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 6),
-#          P_0_8 = P_Stress_0(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 8)) ->
-#   post
-# 
-# post %>%
-#   mutate(P_1_4 = P_Stress_1(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 4),
-#          P_1_6 = P_Stress_1(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 6),
-#          P_1_8 = P_Stress_1(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 8)) ->
-#   post
-# 
-# post %>%
-#   mutate(P_2_4 = P_Stress_2(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 4),
-#          P_2_6 = P_Stress_2(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 6),
-#          P_2_8 = P_Stress_2(`b_Intercept[1]`, `b_Intercept[2]`, b_Study_Hours_Per_Day, 8)) ->
-#   post
 
-mean_P_0_8 <- mean(post$P_0_8)
-print(mean_P_0_8)
-
-mean_P_0_6 <- mean(post$P_0_6)
-print(mean_P_0_6)
-
-mean_P_0_4 <- mean(post$P_0_4)
-print(mean_P_0_4)
-
-mean_P_1_8 <- mean(post$P_1_8)
-print(mean_P_1_8)
-
-mean_P_1_6 <- mean(post$P_1_6)
-print(mean_P_1_6)
-
-mean_P_1_4 <- mean(post$P_1_4)
-print(mean_P_1_4)
-
-mean_P_2_8 <- mean(post$P_2_8)
-print(mean_P_2_8)
-
-mean_P_2_6 <- mean(post$P_2_6)
-print(mean_P_2_6)
-
-mean_P_2_4 <- mean(post$P_2_4)
-print(mean_P_2_4)
-
-
-
-###### Discouraged :(
+###### "Inference - what it could look like" 
 ggplot(probs, aes(P_0_6)) +
   geom_density(color = "blue") + 
   geom_density(aes(P_1_6),
-               color = "red")
+               color = "red") + 
+  geom_density(aes(P_2_6),
+               color = "green")
 
 ggplot(probs2, aes(P_0_6)) +
   geom_density(color = "blue") +
   geom_density(aes(P_1_6),
-               color = "red")
+               color = "red") #+
+  #geom_density(aes(P_2_6),
+   #            color = "green")
   
 
 # Basically the "probability of the probability of being in Stress level 0 (blue)
@@ -314,56 +275,3 @@ ggplot(add_prob_columns(post, "b_Social_Hours_Per_Day", c(1,2,3,4,5,6,7,8)), aes
                color = "red")+
   geom_density(aes(P_2_8),
                color = "green")
-
-
-
-
-# 
-# ggplot(add_prob_columns(post2, "b_Study_Hours_Per_Day", c(1,2,3,4,5,6,7,8)), aes(P_0_4)) +
-#   geom_density(color = "blue") +
-#   geom_density(aes(P_0_6),
-#                color = "red")+
-#   geom_density(aes(P_0_8),
-#                color = "green")
-# 
-# ggplot(add_prob_columns(post2, "b_Study_Hours_Per_Day", c(1,2,3,4,5,6,7,8)), aes(P_1_4)) +
-#   geom_density(color = "blue") +
-#   geom_density(aes(P_1_6),
-#                color = "red")+
-#   geom_density(aes(P_1_8),
-#                color = "green")
-# 
-# ggplot(add_prob_columns(post2, "b_Study_Hours_Per_Day", c(1,2,3,4,5,6,7,8)), aes(P_2_4)) +
-#   geom_density(color = "blue") +
-#   geom_density(aes(P_2_6),
-#                color = "red")+
-#   geom_density(aes(P_2_8),
-#                color = "green")
-
-
-# # t-value from the output
-# t_value <- -1.171
-# 
-# # Standard normal cumulative distribution function (CDF)
-# p_value <- 2 * (1 - pnorm(abs(t_value)))
-# 
-# p_value
-# 
-# (ctable <- coef(summary(model)))
-# 
-# ## calculate and store p values
-# p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-# 
-# ## combined table
-# (ctable <- cbind(ctable, "p value" = p))
-
-
-# For some reason I have to run this lines in my console so that the models compile, please ignore
-
-# Sys.setenv(CC = "clang")
-# Sys.setenv(CXX = "clang++")
-# Sys.setenv(CFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
-# Sys.setenv(CXXFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
-# Sys.setenv(LDFLAGS = "-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk")
-
-
