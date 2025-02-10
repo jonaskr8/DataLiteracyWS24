@@ -1,0 +1,7 @@
+Group 23
+
+1. Jonas Kräher 5721171 jonas.kraeher@student.uni-tuebingen.de
+2. Nicolás Delgado 5798283 nicolas.delgado@student.uni-tuebingen.de
+3. Sina Schäfer 5675092 sina.schaefer@student.uni-tuebingen.de
+
+repo link: https://github.com/jonaskr8/DataLiteracyWS24
